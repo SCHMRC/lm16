@@ -11,6 +11,13 @@ import { Observable } from 'rxjs';
 
 //tslint:disable
 
+interface Finder {
+  presente: boolean;
+  accettata: boolean;
+  completa: boolean;
+  esterna: boolean;
+}
+
 
 @Component({
   selector: 'app-work-list',
@@ -30,12 +37,21 @@ export class WorkListComponent implements OnInit {
   selectedIDR: string;
   show: boolean = false;
   none: boolean = false;
+  finder: Finder = {
+    presente: false,
+    accettata: false,
+    completa: false,
+    esterna: false,
+  }
+  statechecked: string;
+  status = ['presente','accettata','completa','esterna'];
   text: object =
     {
       presente: 'Bozza Presente',
       accettata: 'Bozza Accettata'
     }
   obs: Observable<any[]>;
+  disable: boolean
 
 
 
@@ -65,10 +81,17 @@ export class WorkListComponent implements OnInit {
     });
 
 
+
+
   }
 
   ngAfterViewInit(): void {
 
+  }
+  prova(param: boolean){
+    if (this.disable) {
+      this.init$()
+    }
   }
 
   onSubmit() {
@@ -90,6 +113,24 @@ export class WorkListComponent implements OnInit {
 
   onTableSubmit(element) {
 
+  }
+
+  test(param: string){
+    this.reset()
+    this.orderService.getAllOrder$(this.user.uId).subscribe(
+          (data) => {
+            Object.entries(data).forEach(([key, value]) => {
+              this.order.push(new Order(value['data'], value['oid'], value['nome'], value['pezzi'], value['progetto'],
+                value['externalWork'], value['external'], value['completed'], value['draft'], value['draftAccepted']))
+            }
+            )
+            switch(param){
+              case 'presente': { this.elementdata = this.order.filter(res => { return res.draft[0] !== 'vuoto' && !res.external && !res.completed && !res.draftAccepted }); break }
+              case 'accettata': { this.elementdata = this.order.filter(res => { return res.draftAccepted }); break}
+              case 'completa': { this.elementdata = this.order.filter(res => { return res.completed }); break}
+              case 'esterna': { this.elementdata = this.order.filter(res => { return res.external }); break}
+            }
+          })
   }
 
   search() {

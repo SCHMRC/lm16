@@ -19,6 +19,19 @@
 </mat-form-field>
 
 
+<section class="example-section">
+    <mat-checkbox class="example-margin" [(ngModel)]="disable"
+      (change)="disable ? disable=true:disable=false; prova(disable)">disabilita ricerca per stato</mat-checkbox>
+    <mat-radio-group aria-labelledby="example-radio-group-label" class="example-radio-group" [(ngModel)]="statechecked" [disabled]="disable">
+      <mat-radio-button class="example-radio-button mr-2" *ngFor="let state of status" [value]="state" (change)="test(state)">
+        {{state}}
+      </mat-radio-button>
+    </mat-radio-group>
+</section>
+
+
+
+
 <!---->
 
 <div *ngIf="show" class="jumbotron jumbotron-fluid">
@@ -49,8 +62,10 @@
               {{element.value.externalWork}}</p>
             <p *ngIf="element.value.external"> - Inviato a: {{element.value.externalWork}}</p>
             <p *ngIf="element.value.completed"> - Ordine Completo</p>
-            <p *ngIf="!element.value.external && element.value.draft[0] !== 'vuoto' && !element.value.completed && !element.value.draftAccepted" class="text-primary ml-3 ">{{text['presente']}}</p>
-              <p *ngIf="element.value.draftAccepted && !element.value.external && !element.value.completed" class="text-primary ml-3">{{text['accettata']}}</p>
+            <p *ngIf="!element.value.external && element.value.draft[0] !== 'vuoto' && !element.value.completed && !element.value.draftAccepted"
+              class="text-primary ml-3 ">{{text['presente']}}</p>
+            <p *ngIf="element.value.draftAccepted && !element.value.external && !element.value.completed"
+              class="text-primary ml-3">{{text['accettata']}}</p>
           </mat-panel-title>
           <mat-panel-description>
             {{element.value.data}}
