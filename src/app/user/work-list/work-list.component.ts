@@ -44,7 +44,7 @@ export class WorkListComponent implements OnInit {
     esterna: false,
   }
   statechecked: string;
-  status = ['presente','accettata','completa','esterna'];
+  status = ['presente','accettata','completa','esterna','nuovi'];
   text: object =
     {
       presente: 'Bozza Presente',
@@ -118,7 +118,11 @@ export class WorkListComponent implements OnInit {
 
   test(param: string){
     this.reset()
-    this.orderService.getAllOrder$(this.user.uId).subscribe(
+
+    let user: string;
+    (this.user.utente !== 'grafico') ? user = this.user.uId : user = this.idRappresentante
+
+    this.orderService.getAllOrder$(user).subscribe(
           (data) => {
             Object.entries(data).forEach(([key, value]) => {
               this.order.push(new Order(value['data'], value['oid'], value['nome'], value['pezzi'], value['progetto'],
@@ -130,6 +134,7 @@ export class WorkListComponent implements OnInit {
               case 'accettata': { this.elementdata = this.order.filter(res => { return res.draftAccepted && !res.external && !res.completed}); break}
               case 'completa': { this.elementdata = this.order.filter(res => { return res.completed }); break}
               case 'esterna': { this.elementdata = this.order.filter(res => { return res.external }); break}
+              case 'nuovi': { this.elementdata = this.order.filter(res => { return res.draft[0] == 'vuoto' && !res.draftAccepted && !res.external && !res.completed }); break }
             }
           })
   }
