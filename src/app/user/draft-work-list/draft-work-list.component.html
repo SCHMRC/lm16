@@ -2,11 +2,13 @@
     <mat-form-field>
       <mat-label>Seleziona Ordine</mat-label>
       <mat-select class="mdb-select md-form colorful-select dropdown-primary" name="orderID" [(ngModel)]="orderID" (selectionChange)="onSubmit()">
-        <mat-option *ngFor="let element of orders | keyvalue" value="{{element.key}}">{{element.value.nome}}
+        <mat-option *ngFor="let element of orders | keyvalue" value="{{element.value.key}}" [ngClass]="{'text-info': element.value.value}">{{element.value.value.nome}}
         </mat-option>
       </mat-select>
     </mat-form-field>
   </form>
+
+
 
 <div class="container mat-elevation-z5" *ngIf="show;else alt">
   <div class="jumbotron" *ngIf="result">

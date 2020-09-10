@@ -12,7 +12,7 @@ import { GraphicService } from 'src/app/services/graphic.service';
   styleUrls: ['./draft-work-list.component.scss']
 })
 export class DraftWorkListComponent implements OnInit {
-  orders: any;
+  orders: object[] = [];
   orderID: any;
   result: any;
   user = this.userService.getSubject().getValue();
@@ -43,14 +43,22 @@ export class DraftWorkListComponent implements OnInit {
     this.orders = [];
     if(this.user.utente == 'rappresentante'){
       this.orderService.getAllOrder(this.user.uId).then((snapshot) => {
-        this.orders = snapshot.val();
+        Object.entries(snapshot.val()).forEach(([key,value])=>{
+          if ((!value['completed'] && !value['draftAccepted']) && (value['draft'][0] !== 'vuoto')){
+            this.orders.push({key,value})
+          }
+        })
         this.show = true;
       });
     }else {
       this.userID.subscribe((user) => {
         (user)? this.show = true : this.show = false
         this.orderService.getAllOrder(user).then((snapshot) => {
-          this.orders = snapshot.val();
+          Object.entries(snapshot.val()).forEach(([key, value]) => {
+            if ((!value['completed'] && !value['draftAccepted']) && (value['draft'][0] !== 'vuoto')) {
+              this.orders.push({ key, value })
+            }
+          })
         });
       })
     }
@@ -62,7 +70,7 @@ export class DraftWorkListComponent implements OnInit {
     (this.user.utente == 'rappresentante') ? param = this.user.uId : param = this.graphicService.getsubjectRappresentanteID().getValue()
     this.orderService.getOneDraft(param, this.orderID).then((snapshot) => {
       this.result = snapshot.val();
-      console.log(this.result)
+
 
         this.nome = this.result['nome']
       if (this.result['draft'] || this.result['draft'][0] !== 'vuoto') {
@@ -80,7 +88,7 @@ export class DraftWorkListComponent implements OnInit {
               completed: v['accepted'],
               keyImage: k
             }
-            console.log(album)
+
 
               if (!album['completed']) {
                 this.urlimg.push(album)
@@ -171,7 +179,7 @@ export class DraftWorkListComponent implements OnInit {
     Object.entries(this.task.subtasks).forEach(([key,value])=> {
       if (value['completed']){
         this.orderService.acceptSingleDraft(param, this.orderID, value['idproject'], value['keyImage'])
-        console.log(value)
+
       }
     })
   }
@@ -210,7 +218,6 @@ export class DraftWorkListComponent implements OnInit {
 
   removeDraft() {
     let rappId = this.userID.getValue();
-    console.log(this.urlimg);
     Object.entries(this.urlimg).forEach(([key,value])=>{
       if(value['completed']){
         this.orderService.removeSingleDraft(rappId, this.orderID, value['idproject']).then(() => { console.log('ok') })

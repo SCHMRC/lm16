@@ -1,1 +1,13 @@
+<div class="container" *ngIf="show">
+  <div class="jumbotron jumbotron-fluid">
+    <div class="container">
+      <h1 class="display-4">Ci sono modifiche da apportare nei seguenti ordini</h1>
+      <p class="lead"*ngFor="let element of order">{{element['nome']}}</p>
+      controlla nella sezione visualizza bozze
+    </div>
+  </div>
+
+
+
+</div>
 <p>home works!</p>

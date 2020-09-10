@@ -16,12 +16,16 @@ export class SuccessOrderComponent implements OnInit {
   orderID: any;
   urlimg: Array<any> = [];
   checked: boolean;
-  orders: any;
+  orders: any[] = [];
   user = this.userService.getSubject().getValue();
   userID = this.graphicService.getsubjectRappresentanteID();
   show = false;
   progetti: Project[] = [];
   nome: string;
+  state: object = {
+    completed: false,
+    external: false
+  };
   result: any;
   task: any = {
     name: 'Seleziona Tutto',
@@ -38,14 +42,22 @@ export class SuccessOrderComponent implements OnInit {
     this.orders = [];
     if (this.user.utente == 'rappresentante') {
       this.orderService.getAllOrder(this.user.uId).then((snapshot) => {
-        this.orders = snapshot.val();
+        Object.entries(snapshot.val()).forEach(([key, value]) => {
+          if ((value['draftAccepted'])) {
+            this.orders.push({ key, value })
+          }
+        })
         this.show = true;
       });
     } else {
       this.userID.subscribe((user) => {
         (user) ? this.show = true : this.show = false
         this.orderService.getAllOrder(user).then((snapshot) => {
-          this.orders = snapshot.val();
+          Object.entries(snapshot.val()).forEach(([key, value]) => {
+            if ((value['draftAccepted'])) {
+              this.orders.push({ key, value })
+            }
+          })
         });
       })
     }
@@ -110,7 +122,6 @@ export class SuccessOrderComponent implements OnInit {
           this.show = false;
           return
         }
-        console.log(this.urlimg)
 
         let task = {
           name: 'Seleziona Tutto',
@@ -153,6 +164,12 @@ export class SuccessOrderComponent implements OnInit {
 
   weTransfer() {
     this.router.navigateByUrl('https://wetransfer.com')
+  }
+
+  controlState(){
+    let order: object = this.orders.find((res) => res.key == this.orderID)
+    this.state['completed'] = order['value']['completed']
+    this.state['external'] = order['value']['external']
   }
 
 }

@@ -136,6 +136,7 @@ export class OrderService {
   }
 
   public chageDraft(userID: string, orderID: string, projectNumber: any,imgId: any,modalform: string): Promise<any>{
+    this.angularFireDatabase.database.ref(`${ORDER_PATH}/${userID}/${orderID}`).update({modifiche: true})
     return this.angularFireDatabase.database.ref(`${ORDER_PATH}/${userID}/${orderID}/draft/${projectNumber}/image`).update({modifiche: modalform})
 
   }

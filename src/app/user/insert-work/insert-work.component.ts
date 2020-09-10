@@ -122,6 +122,7 @@ export class InsertWorkComponent implements OnInit {
       false,
       false,
       this.draft,
+      false,
       false
 
     )
@@ -170,7 +171,7 @@ export class InsertWorkComponent implements OnInit {
     });
 
     this.order = new Order(
-      moment().format('lll'),
+      moment().calendar('DD MM YY'),
       this.userService.getOrderId().getValue(),
       this.formGroup['value']['formArray'][0]['nome'],
       this.formGroup['value']['formArray'][1]['elementi_progetto'],
@@ -179,6 +180,7 @@ export class InsertWorkComponent implements OnInit {
       false,
       false,
       this.draft,
+      false,
       false
     )
 

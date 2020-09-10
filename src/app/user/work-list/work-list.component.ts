@@ -37,6 +37,7 @@ export class WorkListComponent implements OnInit {
   selectedIDR: string;
   show: boolean = false;
   none: boolean = false;
+  date: Date;
   finder: Finder = {
     presente: false,
     accettata: false,
@@ -95,7 +96,7 @@ export class WorkListComponent implements OnInit {
 
   }
 
-  onSubmit() {
+  onChange() {
     if (this.selectedIDR !== null && this.selectedIDR !== 'None') {
       this.show = false
       this.none = false
@@ -126,7 +127,7 @@ export class WorkListComponent implements OnInit {
           (data) => {
             Object.entries(data).forEach(([key, value]) => {
               this.order.push(new Order(value['data'], value['oid'], value['nome'], value['pezzi'], value['progetto'],
-                value['externalWork'], value['external'], value['completed'], value['draft'], value['draftAccepted']))
+                value['externalWork'], value['external'], value['completed'], value['draft'], value['draftAccepted'], value['modifiche']))
             }
             )
             switch(param){
@@ -147,7 +148,7 @@ export class WorkListComponent implements OnInit {
           (data) => {
             Object.entries(data).forEach(([key, value]) => {
               this.order.push(new Order(value['data'], value['oid'], value['nome'], value['pezzi'], value['progetto'],
-                value['externalWork'], value['external'], value['completed'], value['draft'], value['draftAccepted']))
+                value['externalWork'], value['external'], value['completed'], value['draft'], value['draftAccepted'], value['modifiche']))
             }
             )
             this.elementdata = this.order.filter(res => { return res.nome.match(this.input) })
@@ -161,7 +162,7 @@ export class WorkListComponent implements OnInit {
           (data) => {
             Object.entries(data).forEach(([key, value]) => {
               this.order.push(new Order(value['data'], value['oid'], value['nome'], value['pezzi'], value['progetto'],
-                value['externalWork'], value['external'], value['completed'], value['draft'], value['draftAccepted']))
+                value['externalWork'], value['external'], value['completed'], value['draft'], value['draftAccepted'], value['modifiche']))
             }
             )
             this.elementdata = this.order.filter(res => { return res.nome.match(this.input) })
@@ -183,7 +184,7 @@ export class WorkListComponent implements OnInit {
           else {
             Object.entries(data).forEach(([key, value]) => {
               this.order.push(new Order(value['data'], value['oid'], value['nome'], value['pezzi'],
-                value['progetto'], value['externalWork'], value['external'], value['completed'], value['draft'], value['draftAccepted']))
+                value['progetto'], value['externalWork'], value['external'], value['completed'], value['draft'], value['draftAccepted'], value['modifiche']))
             })
             this.elementdata = this.order
 
@@ -202,9 +203,8 @@ export class WorkListComponent implements OnInit {
           } else {
             this.show = false;
             Object.entries(data).forEach(([key, value]) => {
-              console.log(value['completed'])
               this.order.push(new Order(value['data'], value['oid'], value['nome'], value['pezzi'], value['progetto'], value['externalWork'],
-                value['external'], value['completed'], value['draft'], value['draftAccepted']))
+                value['external'], value['completed'], value['draft'], value['draftAccepted'], value['modifiche']))
             })
             this.elementdata = this.order
           }
@@ -307,7 +307,24 @@ export class WorkListComponent implements OnInit {
   /*chiamata importante perchè mi chiude il subscribe con this.rappresentanteID
   e soprattutto crea un nuovo BehaviorSubject inizializzato a null*/
   ngOnDestroy() {
-    this.graphicService.completesubjectRappresentanteID()
+    /* this.graphicService.completesubjectRappresentanteID() */
+  }
+
+  searchFromData(){
+    this.reset()
+    let user: string
+    (this.user.utente !== 'grafico') ? user = this.user.uId : user = this.idRappresentante
+    let dataSearch = `${("0" + this.date.getDate()).slice(-2)}/${("0" + (this.date.getMonth() + 1)).slice(-2)}/${this.date.getFullYear()}`;
+    this.orderService.getAllOrder$(user).subscribe(
+      (data) => {
+        Object.entries(data).forEach(([key, value]) => {
+          this.order.push(new Order(value['data'], value['oid'], value['nome'], value['pezzi'], value['progetto'],
+            value['externalWork'], value['external'], value['completed'], value['draft'], value['draftAccepted'], value['modifiche']))
+        }
+        )
+        this.elementdata = this.order.filter(res => { return res.data == dataSearch})
+      })
+
   }
 
 
