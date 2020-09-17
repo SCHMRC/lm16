@@ -7,7 +7,7 @@ import { OrderService } from 'src/app/services/order.service';
 import { StorageService } from 'src/app/services/storage.service';
 import { User } from 'src/app/services/user';
 import { UserService } from 'src/app/services/user.service';
-import { TIPO, SPESSORE } from './../../services/material-list';
+import { TIPO, SPESSORE, FORMATI, ORIENTAMENTO, EXTERNALWORK, FORMA, TIPOVEICOLO} from './../../services/material-list';
 import { take } from 'rxjs/operators';
 import { CdkTextareaAutosize } from '@angular/cdk/text-field';
 import * as Rx from 'rxjs';
@@ -16,6 +16,7 @@ import * as moment from 'moment';
 import {Project} from './../../services/project';
 import { Order } from 'src/app/services/order';
 import * as id from 'shortid';
+import { Part } from 'src/app/services/part';
 //tslint:disable
 
 @Component({
@@ -24,6 +25,7 @@ import * as id from 'shortid';
   styleUrls: ['./insert-work.component.scss']
 })
 export class InsertWorkComponent implements OnInit {
+  tipoVeicolo: string[] = [];
   dragDropConfig = {
     showList: true,
     showProgress: true
@@ -46,10 +48,13 @@ export class InsertWorkComponent implements OnInit {
   reset: boolean = false;
   externalWork: string[] = []
   draft: any[] = ['vuoto'];
+  listaForm: FormGroup[] = [];
+  formatiStampa: string[];
+  orientamento: string[];
 
 
 
-  formGroup: FormGroup;
+  formGroup: FormGroup; //<-Parent form
   formList: FormGroup[] = [];
   pezzi = 1;
 
@@ -74,133 +79,97 @@ export class InsertWorkComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.tipoVeicolo = TIPOVEICOLO;
+    this.externalWork = EXTERNALWORK;
+    this.forma = FORMA;
+    this.formatiStampa = FORMATI;
+    this.orientamento = ORIENTAMENTO;
 
     this.orderId = id.generate();
     this.userService.setOrderId(this.orderId);
 
-    this.externalWork = [
-      'City Vision',
-      'Evoluzione Stampa',
-      'Bassolino',
-      'Litolux',
-      'Promo Print',
-    ]
-
-
-    this.forma = [
-      'Quadrato',
-      'Ovale',
-      'Cerchio',
-      'Sagomato'
-    ]
-
     this.subject.next(this.setLista(this.pezzi))
-    this.subject.subscribe((data) => {
-      this.formList = data
-    })
+    this.subject.subscribe((data) => { this.formList = data })
 
-    this.formGroup = this.formBuilder.group({
-      formArray: this.formBuilder.array([
-        this.formBuilder.group({
-          nome: ['', Validators.required]
-        }),
-        this.formBuilder.group({
-          elementi_progetto: [1, [Validators.required, Validators.min(1), Validators.max(15)]]
-        }),
-        this.formBuilder.group({
-          externalWork: ['interno']
-        }),
-      ])
-    });
-    this.order = new Order(
-      moment().format('lll'),
-      this.userService.getOrderId().getValue(),
-      this.formGroup['value']['formArray'][0]['nome'],
-      this.formGroup['value']['formArray'][1]['elementi_progetto'],
-      this.project,
-      this.formGroup['value']['formArray'][2]['externalWork'],
-      false,
-      false,
-      this.draft,
-      false,
-      false
-
-    )
-
-    /*this.order =
-    {
-      nome: this.formGroup['value']['formArray'][0]['nome'],
-      data: moment().format('LLL'),
-      pezzi: this.formGroup['value']['formArray'][1]['elementi_progetto'],
-      progetto: this.project
-    }*/
+    this.formGroup = this.setOrder();
   }
 
 
   onSubmit() {
     this.project = [];
+    let descrizioneVeicolo: Part[] = [];
     let count = 0;
     this.formList.forEach(element => {
       let urlL: string[] = [];
       (this.imageUrl[count]) ? urlL = this.imageUrl[count] : urlL = [null]
 
-      this.project.push(
-        {
-          image: urlL,
-          projectNumber: count++,
-          luminosa: element['value']['luminosa'],
-          palo: element['value']['palo'],
-          forma: element['value']['forma'],
-          materiale: element['value']['materiale'],
-          spessore: element['value']['spessore'],
-          laminazione: element['value']['laminazione'],
-          calpestabile: element['value']['calpestabile'],
-          colore: element['value']['colore'],
-          opalino: element['value']['opalino'],
-          pieghe: element['value']['pieghe'],
-          occhielli: element['value']['occhielli'],
-          base: element['value']['base'],
-          altezza: element['value']['altezza'],
-          lato: element['value']['lato'],
-          diametro: element['value']['diametro'],
-          copie: element['value']['copie'],
-          bifacciale: element['value']['bifacciale'],
-          note: element['value']['note']
-        })
+      this.orderService.getDescrizioneVeicoli().subscribe(descrizione =>{
+        if(descrizione !== null){
+          descrizione.forEach(element => {
+            if (Number(element.id) !== -1) {
+              descrizioneVeicolo.push(element)
+            }
+          });
+        }
 
-    });
+        this.project.push(
+          {
+            image: urlL,
+            projectNumber: count++,
+            luminosa: element['value']['luminosa'],
+            palo: element['value']['palo'],
+            forma: element['value']['forma'],
+            tipoVeicolo: element['value']['tipoVeicolo'],
+            descrizioneVeicolo: descrizioneVeicolo,
+            materiale: element['value']['materiale'],
+            orientamento: element['value']['orientamento'],
+            plastificato: element['value']['plastificato'],
+            formati: element['value']['formati'],
+            spessore: element['value']['spessore'],
+            laminazione: element['value']['laminazione'],
+            calpestabile: element['value']['calpestabile'],
+            colore: element['value']['colore'],
+            opalino: element['value']['opalino'],
+            pieghe: element['value']['pieghe'],
+            occhielli: element['value']['occhielli'],
+            base: element['value']['base'],
+            altezza: element['value']['altezza'],
+            lato: element['value']['lato'],
+            diametro: element['value']['diametro'],
+            copie: element['value']['copie'],
+            bifacciale: element['value']['bifacciale'],
+            note: element['value']['note']
+          })
 
-    this.order = new Order(
-      moment().calendar('DD MM YY'),
-      this.userService.getOrderId().getValue(),
-      this.formGroup['value']['formArray'][0]['nome'],
-      this.formGroup['value']['formArray'][1]['elementi_progetto'],
-      this.project,
-      this.formGroup['value']['formArray'][2]['externalWork'],
-      false,
-      false,
-      this.draft,
-      false,
-      false
-    )
+      });
 
-    /*this.order =
-    {
-      id: this.userService.getOrderId().getValue(),
-      nome: this.formGroup['value']['formArray'][0]['nome'],
-      data: moment().format('lll'),
-      pezzi: this.formGroup['value']['formArray'][1]['elementi_progetto'],
-      accepted: false,
-      progetto: this.project
-    }*/
+      this.order = new Order(
+        moment().calendar('DD MM YY'),
+        this.userService.getOrderId().getValue(),
+        this.formGroup['value']['nome'],
+        this.formGroup['value']['elementi_progetto'],
+        this.project,
+        this.formGroup['value']['externalWork'],
+        false,
+        false,
+        this.draft,
+        false,
+        false,
+        '',
+        ''
+      )
 
-    this.userService.setProject(this.project);
-    this.userService.getSubject().subscribe((user) => {
-      this.orderService.insertOrder(user, this.order)
-      this.orderService.control(user.uId)
-    })
-    this.userService.updateListOrder(this.order)
-    this.showSuccess()
+      this.userService.setProject(this.project);
+
+      this.userService.getSubject().subscribe((user) => {
+        this.orderService.insertOrder(user, this.order)
+        this.orderService.control(user.uId)
+      })
+
+      this.userService.updateListOrder(this.order)
+      this.showSuccess()
+      })
+
   }
 
 
@@ -220,18 +189,31 @@ export class InsertWorkComponent implements OnInit {
       .subscribe(() => this.autosize.resizeToFitContent(true));
   }
 
+  private setOrder(): FormGroup {
+    return this.formBuilder.group({
+      nome: new FormControl('', Validators.required),
+      elementi_progetto: new FormControl(1, [Validators.required, Validators.min(1), Validators.max(15)]),
+      externalWork: new FormControl('interno')
+    })
+
+  }
+
 
   private setLista(param: number): FormGroup[] {
     const form: FormGroup[] = [];
-
     for (let i = 0; i < this.pezzi; i++) {
       form[i] =
         new FormGroup({
           luminosa: new FormControl(),
           calpestabile: new FormControl(),
           palo: new FormControl(),
-          materiale: new FormControl('', [Validators.required]),
-          copie: new FormControl('', [Validators.required]),
+          materiale: new FormControl(''),
+          orientamento: new FormControl(''),
+          plastificato: new FormControl(),
+          formati: new FormControl(''),
+          copie: new FormControl(''),
+          tipoVeicolo: new FormControl('',[]),
+          descrizioneVeicolo: new FormControl(''),
           forma: new FormControl(),
           spessore: new FormControl(),
           colore: new FormControl(),
@@ -260,6 +242,7 @@ export class InsertWorkComponent implements OnInit {
   }
 
   resetValue(){
+    this.formGroup = this.setOrder();
     this.project = [];
     this.order = null;
     this.pezzi = 1;

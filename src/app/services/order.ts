@@ -11,10 +11,13 @@ export class Order {
   completed: boolean;
   modifiche: boolean;
   draftAccepted: boolean;
+  datadraftAccepted: string;
+  dataInvio: string;
   draft: any[];
 
   constructor(data: string, oid: string, nome: string, pezzi: number, progetto: Project[], externalWork: string ,
-              external: boolean , completed: boolean, draft: any[], draftAccepted: boolean, modifiche: boolean){
+              external: boolean, completed: boolean, draft: any[], draftAccepted: boolean, modifiche: boolean, datadraftAccepted: string,
+              dataInvio: string){
     this.data = data;
     this.nome = nome;
     this.pezzi = pezzi;
@@ -26,6 +29,8 @@ export class Order {
     this.draft = draft;
     this.draftAccepted = draftAccepted;
     this.modifiche = modifiche;
+    this.datadraftAccepted = datadraftAccepted;
+    this.dataInvio = dataInvio;
 
   }
   public getCompleted(){

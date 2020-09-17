@@ -46,7 +46,7 @@
       (click)="completed()">Ordine Completo</button>
     <button *ngIf="!state['external']" class="btn btn-warning mr-3 waves-light rounded-pill" mdbBtn mdbWavesEffect type="button"
       (click)="external()">Ordine Esterno </button>
-    <button class="btn btn-outline-dark mr-3 waves-light rounded-pill" mdbBtn mdbWavesEffect type="button"><a
+    <button class="btn btn-outline-dark mr-3 waves-light rounded-pill" mdbBtn mdbWavesEffect type="button" (click)="dataInvio()"><a
         href="https://wetransfer.com" target="_blank">Invia tramite WeTransfer</a></button>
   </div>
 

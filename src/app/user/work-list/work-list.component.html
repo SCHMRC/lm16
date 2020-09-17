@@ -1,10 +1,10 @@
 <div *ngIf="user.utente == 'grafico'">
   <form>
-    <mat-form-field  appearance="outline">
+    <mat-form-field appearance="outline">
       <mat-label>Seleziona Id rappresentante</mat-label>
       <select matNativeControl [(ngModel)]="selectedIDR" name="select" (change)="onChange()">
-        <option value="None" selected>None</option>
-        <option *ngFor="let user of users | keyvalue" [value]="user.value.uId">
+        <option value="None">None</option>
+        <option *ngFor="let user of users | keyvalue" [value]="user.value.uId" selected>
           {{user.value.name}}
         </option>
       </select>
@@ -12,28 +12,29 @@
   </form>
 </div>
 
-<mat-form-field id="search"  appearance="outline">
-  <input matInput type="text"  [(ngModel)]="input" placeholder="Cerca per nome" name="input" #myinput
-    (input)="search()" [disabled]="show">
+<mat-form-field id="search" appearance="outline">
+  <input matInput type="text" [(ngModel)]="input" placeholder="Cerca per nome" name="input" #myinput (input)="search()"
+    [disabled]="show">
   <mat-icon matSuffix>search</mat-icon>
 </mat-form-field>
 
 
 
 <section class="row justify-content-center">
-    <mat-checkbox class="mt-3 mr-3" [(ngModel)]="disable"
-      (change)="disable ? disable=true:disable=false; prova(disable)">disabilita ricerca per stato</mat-checkbox>
-    <mat-radio-group aria-labelledby="example-radio-group-label" class="example-radio-group" [(ngModel)]="statechecked" [disabled]="disable">
-      <mat-radio-button class="mt-3 mr-2" *ngFor="let state of status" [value]="state" (change)="test(state)">
-        {{state}}
-      </mat-radio-button>
-    </mat-radio-group>
-    <mat-form-field  appearance="outline">
-      <mat-label>Seleziona la data</mat-label>
-      <input matInput [matDatepicker]="dp3" [(ngModel)]="date" disabled (dateChange)="searchFromData()">
-      <mat-datepicker-toggle matSuffix [for]="dp3"></mat-datepicker-toggle>
-      <mat-datepicker #dp3 disabled="false"></mat-datepicker>
-    </mat-form-field>
+  <mat-checkbox class="mt-3 mr-3" [(ngModel)]="disable" (change)="disable ? disable=true:disable=false; prova(disable)">
+    disabilita ricerca per stato</mat-checkbox>
+  <mat-radio-group aria-labelledby="example-radio-group-label" class="example-radio-group" [(ngModel)]="statechecked"
+    [disabled]="disable">
+    <mat-radio-button class="mt-3 mr-2" *ngFor="let state of status" [value]="state" (change)="test(state)">
+      {{state}}
+    </mat-radio-button>
+  </mat-radio-group>
+  <mat-form-field appearance="outline">
+    <mat-label>Seleziona la data</mat-label>
+    <input matInput [matDatepicker]="dp3" [(ngModel)]="date" disabled (dateChange)="searchFromData()">
+    <mat-datepicker-toggle matSuffix [for]="dp3"></mat-datepicker-toggle>
+    <mat-datepicker #dp3 disabled="false"></mat-datepicker>
+  </mat-form-field>
 </section>
 
 
@@ -94,20 +95,67 @@
                 </button></span></h1>
             <div class="jumbotron blue-grey lighten-5">
               <div class="container">
+
+
                 <h1 class="display-4">Cliente: {{element.value.nome}}</h1>
-                <p class="lead">{{progetto.value.materiale}} <span *ngIf="progetto.value.calpestabile">
+                <h2 class="display-5">id :{{element.value.oid}}</h2>
+                <div *ngIf="user.utente == 'grafico'"><b>Nome File:</b> {{element.value.nome}} - copie
+                  {{progetto.value.copie}} - {{progetto.value.materiale}}
+                  <span *ngIf="progetto.value.calpestabile">Calpestabile</span>
+                  <span *ngIf="progetto.value.luminosa">{{progetto.value.luminosa}}</span>
+                  <span *ngIf="progetto.value.opalino">- {{progetto.value.opalino}}</span>
+                  <span *ngIf="progetto.value.palo">- Altezza palo: {{progetto.value.palo}} m</span>
+                  <span *ngIf="progetto.value.base">- misura {{progetto.value.base}}x{{progetto.value.altezza}}cm</span>
+                  <span *ngIf="progetto.value.diametro">- diametro {{progetto.value.diametro}}cm</span>
+                  <span *ngIf="progetto.value.laminazione">- laminazione {{progetto.value.laminazione}}</span>
+                  <span *ngIf="progetto.value.pieghe">- Pieghe</span>
+                  <span *ngIf="progetto.value.occhielli">- Occhielli</span>
+                  <span *ngIf="progetto.value.bifacciale">- Bifacciale</span>
+                </div>
+                <p class="lead" *ngIf="progetto.value.materiale !== 'Veicolo'; else alt">Materiale:
+                  {{progetto.value.materiale}} <span *ngIf="progetto.value.calpestabile">
                     Calpestabile</span></p>
+                <ng-template #alt>
+                  <p class="lead">Veicolo: {{progetto.value.tipoVeicolo}}</p>
+                </ng-template>
+                <p class="lead">Copie: {{progetto.value.copie}}</p>
+                <p *ngIf="progetto.value.note" class="lead">Note: {{progetto.value.note}}</p>
                 <div *ngIf="progetto.colore" class="container">
                   <div class="row">
                     <p class="lead mr-3">Colore: </p>
                     <div id="circle" [ngStyle]="{'background': progetto.value.colore}"></div>
                   </div>
                 </div>
+                <div class="container" *ngIf="progetto.value.materiale == 'Veicolo'">
+                  <div class="row" id="container">
+                    <div *ngFor="let element of numeroListaId; index as k" id="id-{{element}}" class="red-test"
+                      [ngClass]="{'bg-danger': parts[element]}">
+                      <b>{{element}}</b>
+                    </div>
+                  </div>
+
+                  <div class="container">
+                    <span *ngFor="let elementi of elementiveicolo | keyvalue">
+                      <span *ngIf="elementi.value.ido == element.value.oid">
+                        <span class="float-left" *ngFor="let descrizione of elementi.value.descrizioniParti | keyvalue">
+                          <div class="card bg-light-gray mr-3 p-2 mt-2" style="max-width: 22rem;">
+                            <p class="card-header"><b>{{descrizione.value.id}}</b></p>
+                            <p class="card-text">base: {{descrizione.value.base}}</p>
+                            <p class="card-text">altezza: {{descrizione.value.altezza}}</p>
+                            <p class="card-text">contenuto: {{descrizione.value.contenuto}}</p>
+                            <p class="card-text">materiale: {{descrizione.value.materiale}}</p>
+                          </div>
+                        </span>
+                      </span>
+                    </span>
+                  </div>
+
+
+                </div>
                 <p *ngIf="progetto.value.forma" class="lead">Forma: {{progetto.value.forma}}</p>
                 <p *ngIf="progetto.value.opalino" class="lead">Opalino</p>
                 <p *ngIf="progetto.value.spessore" class="lead">Spessore: {{progetto.value.spessore}} mm</p>
                 <p *ngIf="progetto.value.laminazione" class="lead">Laminazione: {{progetto.value.laminazione}}</p>
-                <p class="lead">Copie: {{progetto.value.copie}}</p>
                 <p class="lead" *ngIf="progetto.value.diametro">Diametro: {{progetto.value.diametro}} cm</p>
                 <p class="lead" *ngIf="progetto.value.lato">Lato: {{progetto.value.lato}} cm</p>
                 <p class="lead" *ngIf="progetto.value.base">Base: {{progetto.value.base}} cm</p>
@@ -117,7 +165,6 @@
                 <p *ngIf="progetto.value.pieghe" class="lead">Pieghe</p>
                 <p *ngIf="progetto.value.occhielli" class="lead">Occhielli</p>
                 <p *ngIf="progetto.value.bifacciale" class="lead">Bifacciale</p>
-                <p class="lead">Note: {{progetto.value.note}}</p>
               </div>
             </div>
 
@@ -144,20 +191,6 @@
                   </mat-card-actions>
                 </mat-card>
               </div>
-            </div>
-
-            <div *ngIf="user.utente == 'grafico'"><b>Nome File:</b> {{element.value.nome}} - copie
-              {{progetto.value.copie}} - {{progetto.value.materiale}}
-              <span *ngIf="progetto.value.calpestabile">Calpestabile</span>
-              <span *ngIf="progetto.value.luminosa">{{progetto.value.luminosa}}</span>
-              <span *ngIf="progetto.value.opalino">- {{progetto.value.opalino}}</span>
-              <span *ngIf="progetto.value.palo">- Altezza palo: {{progetto.value.palo}} m</span>
-              <span *ngIf="progetto.value.base">- misura {{progetto.value.base}}x{{progetto.value.altezza}}cm</span>
-              <span *ngIf="progetto.value.diametro">- diametro {{progetto.value.diametro}}cm</span>
-              <span *ngIf="progetto.value.laminazione">- laminazione {{progetto.value.laminazione}}</span>
-              <span *ngIf="progetto.value.pieghe">- Pieghe</span>
-              <span *ngIf="progetto.value.occhielli">- Occhielli</span>
-              <span *ngIf="progetto.value.bifacciale">- Bifacciale</span>
             </div>
 
 

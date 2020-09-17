@@ -7,6 +7,9 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { UserService } from './user.service';
 import { StorageService } from './storage.service';
 import { map } from 'rxjs/operators';
+import * as moment from 'moment';
+import { FormGroup } from '@angular/forms';
+import { Part } from './part';
 
 // tslint:disable
 
@@ -17,6 +20,7 @@ export class OrderService {
   list: any[] = [];
   order: Order[] = [];
   listIdImg: BehaviorSubject<any[]> = new BehaviorSubject(null);
+  descrizioneVeicoli: BehaviorSubject<Part[]> = new BehaviorSubject(null);
   reset: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
   constructor(private angularFireDatabase: AngularFireDatabase, private userService: UserService, private storageStorage: StorageService) { }
@@ -38,6 +42,14 @@ export class OrderService {
 
   public getAllOrder(uid: string){
     return this.angularFireDatabase.database.ref(`${ORDER_PATH}/${uid}`).once('value')
+  }
+
+  public setDescrizioniVeicoli(param: Part[]){
+    this.descrizioneVeicoli.next(param);
+  }
+
+  public getDescrizioneVeicoli(): BehaviorSubject<Part[]>{
+    return this.descrizioneVeicoli
   }
 
   public getAllProjectSnap(uid: string): Promise<any> {
@@ -118,9 +130,11 @@ export class OrderService {
   }
 
   public acceptSingleDraft(userID: string, orderID: string, projectId: string, keyImage: string): Promise<any> {
+    let date = new Date();
+    let dataAccepted = `${("0" + date.getDate()).slice(-2)}/${("0" + (date.getMonth() + 1)).slice(-2)}/${date.getFullYear()}`;
     let promise: Promise<any> = new Promise((res,rej)=>{
       const refDraftAccepted = this.angularFireDatabase.database.ref(`${ORDER_PATH}/${userID}/${orderID}`);
-      refDraftAccepted.update({ draftAccepted: true }).then(() => {
+      refDraftAccepted.update({ draftAccepted: true, datadraftAccepted: dataAccepted }).then(() => {
         const ref = this.angularFireDatabase.database.ref(`${ORDER_PATH}/${userID}/${orderID}/draft/${projectId}/${keyImage}`)
         ref.update({ accepted: true })
       });
@@ -150,6 +164,9 @@ export class OrderService {
     let path = `${ORDER_PATH}/${userId}/${orderId}`;
     this.angularFireDatabase.database.ref(path).update({ external: true });
 
+  }
+  public setDataInvio(userId: string, orderId: string, dataSearch: string): Promise<any>{
+    return this.angularFireDatabase.database.ref(`${ORDER_PATH}/${userId}/${orderId}`).update({ dataInvio: dataSearch})
   }
 }
 

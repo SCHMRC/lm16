@@ -6,6 +6,9 @@ import { User } from 'src/app/services/user';
 import { GraphicService } from 'src/app/services/graphic.service';
 import { StorageService } from 'src/app/services/storage.service';
 import { Observable } from 'rxjs';
+import { Part } from 'src/app/services/part';
+import { Parts } from 'src/app/services/parts';
+import { Project } from 'src/app/services/project';
 
 
 
@@ -18,6 +21,13 @@ interface Finder {
   esterna: boolean;
 }
 
+interface Elementiveicolo {
+  ido: string;
+  idp: any;
+  parti: Parts;
+  descrizioniParti: Part[];
+}
+
 
 @Component({
   selector: 'app-work-list',
@@ -25,6 +35,10 @@ interface Finder {
   styleUrls: ['./work-list.component.scss']
 })
 export class WorkListComponent implements OnInit {
+  numeroListaId: number[] = [];
+  elementiveicolo: Elementiveicolo[] = []
+  part: Part[] = [];
+  parts: Parts;
   displayedColumns: string[] = ['nome'];
   idRappresentante: string;
   elementdata: any[] = []
@@ -127,7 +141,7 @@ export class WorkListComponent implements OnInit {
           (data) => {
             Object.entries(data).forEach(([key, value]) => {
               this.order.push(new Order(value['data'], value['oid'], value['nome'], value['pezzi'], value['progetto'],
-                value['externalWork'], value['external'], value['completed'], value['draft'], value['draftAccepted'], value['modifiche']))
+                value['externalWork'], value['external'], value['completed'], value['draft'], value['draftAccepted'], value['modifiche'], value['datadraftAccepted'], value['dataInvio']))
             }
             )
             switch(param){
@@ -148,7 +162,7 @@ export class WorkListComponent implements OnInit {
           (data) => {
             Object.entries(data).forEach(([key, value]) => {
               this.order.push(new Order(value['data'], value['oid'], value['nome'], value['pezzi'], value['progetto'],
-                value['externalWork'], value['external'], value['completed'], value['draft'], value['draftAccepted'], value['modifiche']))
+                value['externalWork'], value['external'], value['completed'], value['draft'], value['draftAccepted'], value['modifiche'], value['datadraftAccepted'], value['dataInvio']))
             }
             )
             this.elementdata = this.order.filter(res => { return res.nome.match(this.input) })
@@ -162,7 +176,7 @@ export class WorkListComponent implements OnInit {
           (data) => {
             Object.entries(data).forEach(([key, value]) => {
               this.order.push(new Order(value['data'], value['oid'], value['nome'], value['pezzi'], value['progetto'],
-                value['externalWork'], value['external'], value['completed'], value['draft'], value['draftAccepted'], value['modifiche']))
+                value['externalWork'], value['external'], value['completed'], value['draft'], value['draftAccepted'], value['modifiche'], value['datadraftAccepted'], value['dataInvio']))
             }
             )
             this.elementdata = this.order.filter(res => { return res.nome.match(this.input) })
@@ -184,7 +198,31 @@ export class WorkListComponent implements OnInit {
           else {
             Object.entries(data).forEach(([key, value]) => {
               this.order.push(new Order(value['data'], value['oid'], value['nome'], value['pezzi'],
-                value['progetto'], value['externalWork'], value['external'], value['completed'], value['draft'], value['draftAccepted'], value['modifiche']))
+                value['progetto'], value['externalWork'], value['external'], value['completed'], value['draft'], value['draftAccepted'], value['modifiche'], value['datadraftAccepted'], value['dataInvio']))
+              Object.entries(value['progetto']).forEach((key, valueP) => {
+                let k = key[0]
+                let element = key[1];
+                if (element['materiale'] == 'Veicolo') {
+                  for (let k = 1; k <= 16; k++) {
+                    this.numeroListaId.push(k);
+                  }
+                  this.parts = new Parts();
+                  this.part = element['descrizioneVeicolo']
+                  let numero: string[] = [];
+                  this.part.forEach(element => {
+                    numero.push(element.id.split('-')[1])
+                  })
+                  numero.forEach(i => {
+                    this.parts[i] = true
+                  });
+                  this.elementiveicolo.push({
+                    ido: value['oid'],
+                    idp: k,
+                    parti: this.parts,
+                    descrizioniParti: this.part,
+                  })
+                }
+              });
             })
             this.elementdata = this.order
 
@@ -204,8 +242,35 @@ export class WorkListComponent implements OnInit {
             this.show = false;
             Object.entries(data).forEach(([key, value]) => {
               this.order.push(new Order(value['data'], value['oid'], value['nome'], value['pezzi'], value['progetto'], value['externalWork'],
-                value['external'], value['completed'], value['draft'], value['draftAccepted'], value['modifiche']))
+              value['external'], value['completed'], value['draft'], value['draftAccepted'], value['modifiche'], value['datadraftAccepted'], value['dataInvio']))
+              Object.entries(value['progetto']).forEach((key,valueP) => {
+                let k = key[0]
+                let element = key[1];
+                if (element['materiale'] == 'Veicolo') {
+                  for (let k = 1; k <= 16; k++) {
+                    this.numeroListaId.push(k);
+                  }
+                  this.parts = new Parts();
+                  this.part = element['descrizioneVeicolo']
+                  let numero: string[] = [];
+                  this.part.forEach(element => {
+                    numero.push(element.id.split('-')[1])
+                  })
+                  numero.forEach(i => {
+                    this.parts[i] = true
+                  });
+                  this.elementiveicolo.push({
+                    ido: value['oid'],
+                    idp: k,
+                    parti: this.parts,
+                    descrizioniParti: this.part,
+                  })
+                }
+              });
+
+
             })
+
             this.elementdata = this.order
           }
 
@@ -300,6 +365,7 @@ export class WorkListComponent implements OnInit {
   }
 
   reset() {
+    this.elementiveicolo = []
     this.elementdata = []
     this.order = []
   }
@@ -314,12 +380,12 @@ export class WorkListComponent implements OnInit {
     this.reset()
     let user: string
     (this.user.utente !== 'grafico') ? user = this.user.uId : user = this.idRappresentante
-    let dataSearch = `${("0" + this.date.getDate()).slice(-2)}/${("0" + (this.date.getMonth() + 1)).slice(-2)}/${this.date.getFullYear()}`;
+    let dataSearch = `${("0" + (this.date.getMonth() + 1)).slice(-2)}/${("0" + this.date.getDate()).slice(-2)}/${this.date.getFullYear()}`;
     this.orderService.getAllOrder$(user).subscribe(
       (data) => {
         Object.entries(data).forEach(([key, value]) => {
           this.order.push(new Order(value['data'], value['oid'], value['nome'], value['pezzi'], value['progetto'],
-            value['externalWork'], value['external'], value['completed'], value['draft'], value['draftAccepted'], value['modifiche']))
+            value['externalWork'], value['external'], value['completed'], value['draft'], value['draftAccepted'], value['modifiche'], value['datadraftAccepted'], value['dataInvio']))
         }
         )
         this.elementdata = this.order.filter(res => { return res.data == dataSearch})

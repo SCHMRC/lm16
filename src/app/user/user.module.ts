@@ -23,6 +23,8 @@ import { NgxFileDropModule } from 'ngx-file-drop';
 import { DropzoneDirective } from './../services/dropzone.directive';
 import { UploadTaskComponent } from './../shared/uploader/upload-task/upload-task.component';
 import { UploaderComponent } from './../shared/uploader/uploader.component';
+import { DucatoMaxiComponent } from './../shared/cars/ducato-maxi/ducato-maxi.component';
+import { FiorinoComponent } from './../shared/cars/fiorino/fiorino.component';
 import 'hammerjs';
 
 
@@ -42,6 +44,8 @@ import 'hammerjs';
     GraphicComponent,
     NumeroPipe,
     DraftWorkListComponent,
+    DucatoMaxiComponent,
+    FiorinoComponent,
     SuccessOrderComponent],
   imports: [
     CommonModule,

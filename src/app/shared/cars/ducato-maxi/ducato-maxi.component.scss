@@ -1,39 +1,7 @@
-.example-card {
-  max-width: 400px;
-}
-
-.example-header-image {
-  background-image: url('https://material.angular.io/assets/img/examples/shiba1.jpg');
-  background-size: cover;
-}
-.example-headers-align {
-  flex-basis: 0;
-  align-items: center;
-}
-#circle {
-      width: 20px;
-      height: 20px;
-      border-radius: 50%
-
-    }
-
-    /* Structure */
-table {
-  width: 100%;
-}
-
-#search {
-  font-size: 14px;
-  width: 100%;
-}
-.container{
-  padding: '0px'
-}
-
 
 #container{
-  position: relative !important;
-  background-image: url('./../../../assets/furgone_001.png');
+  position: relative;
+  background-image: url('./../../../../assets/furgone_001.png');
   background-size: contain;
   background-repeat: no-repeat;
    width: 600px; height: 400px;
@@ -41,30 +9,30 @@ table {
 
 
 #id-1 {
-  left: 55px !important;
-  top: 55px !important;
+  left: 55px;
+  top: 55px;
   width: 85px;
   height: 30px;
 }
 
 #id-2 {
-  left: 141px !important;
-  top: 55px !important;
+  left: 141px;
+  top: 55px;
   width: 85px;
   height: 35px;
 }
 
 
 #id-3 {
-  left: 55px !important;
-  top: 98px !important;
+  left: 55px;
+  top: 98px;
   width: 82px;
   height: 8.123px;
 }
 
 #id-4 {
-  left: 145px !important;
-  top: 98px !important;
+  left: 145px;
+  top: 98px;
   width: 70px;
   height: 8.123px;
 }
@@ -117,10 +85,10 @@ table {
   height: 40px;
 }
 #id-11 {
-  left: 160px !important;
-  top: 240px !important;
-  width: 85px !important;
-  height: 40px !important;
+  left: 160px;
+  top: 240px;
+  width: 85px;
+  height: 40px;
 }
 
 #id-12 {
@@ -155,12 +123,42 @@ table {
   width: 47px;
   height: 20px;
 }
-
 [class^="red-"] {
-  border-radius: 5px !important;
-  position: absolute !important;
-  z-index: 1 !important;
+  border-radius: 5px;
+  position: absolute;
+  z-index: 1;
   background: lightgrey;
 }
 
+
+
+.red-fade {
+  transition-duration: 0.3s;
+}
+.red-fade:hover, .red-fade:focus, .red-fade:active {
+  background-color: white;
+  color: white
+}
+
+.colonna {
+  display: flex;
+  flex-direction: column;
+  margin: 15px 0;
+}
+
+#param {
+  border: solid lightgrey 1px;
+  border-radius: 20px;
+  padding: 5px;
+  width: 600px !important;
+}
+
+#textarea{
+  width: 380px !important;
+}
+
+.numero{
+  width: 80px !important;
+
+}
 

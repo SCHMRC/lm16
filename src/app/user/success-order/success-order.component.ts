@@ -13,6 +13,7 @@ import { Project } from 'src/app/services/project';
   styleUrls: ['./success-order.component.scss']
 })
 export class SuccessOrderComponent implements OnInit {
+  date: Date;
   orderID: any;
   urlimg: Array<any> = [];
   checked: boolean;
@@ -78,6 +79,9 @@ export class SuccessOrderComponent implements OnInit {
           palo: value['palo'],
           forma: value['forma'],
           materiale: value['materiale'],
+          orientamento: value['orientamento'],
+          plastificato: value['plastificato'],
+          formati: value['formati'],
           spessore: value['spessore'],
           laminazione: value['laminazione'],
           calpestabile: value['calpestabile'],
@@ -170,6 +174,15 @@ export class SuccessOrderComponent implements OnInit {
     let order: object = this.orders.find((res) => res.key == this.orderID)
     this.state['completed'] = order['value']['completed']
     this.state['external'] = order['value']['external']
+  }
+
+  dataInvio(){
+    this.date = new Date()
+    let dataSearch = `${("0" + this.date.getDate()).slice(-2)}/${("0" + (this.date.getMonth() + 1)).slice(-2)}/${this.date.getFullYear()}`;
+    this.userID.subscribe((user)=>{
+      this.orderService.setDataInvio(user, this.orderID, dataSearch)
+    })
+
   }
 
 }

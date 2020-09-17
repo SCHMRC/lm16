@@ -1,0 +1,44 @@
+<div id="container">
+  <div *ngFor="let element of i; index as ix" id="id-{{element}}" class="red-fade" (click)="test($event)"
+    [ngClass]="{'bg-danger': parts[element]}">
+    <b>{{element}}</b>
+  </div>
+</div>
+
+<form [formGroup]="formParent">
+
+
+  <div formArrayName="child">
+    <div *ngFor="let child of formParent['controls'].child['controls'];index as i">
+
+      <div *ngIf="i>0" formGroupName="{{i}}">
+        {{idElements[i-1]}}
+        <mat-form-field appearance="legacy" class="numero pl-2">
+          <mat-label>Base</mat-label>
+          <input matInput formControlName="base" name="base" placeholder="espresso in cm" type="number">
+        </mat-form-field>
+          <mat-form-field appearance="legacy" class="numero pl-2">
+            <mat-label>Altezza</mat-label>
+            <input matInput formControlName="altezza" name="altezza" placeholder="espresso in cm" type="number">
+          </mat-form-field>
+          <mat-radio-group class="ml-3" formControlName="materiale" name="materiale{{i}}">
+            <mat-radio-button class="ml-3" value="digitale">Digitale</mat-radio-button>
+            <mat-radio-button class="ml-3" value="prespaziato">Prespaziato</mat-radio-button>
+          </mat-radio-group>
+
+          <p>
+            <mat-form-field appearance="legacy" class="pl-2" id="textarea">
+              <mat-label>Contenuto</mat-label>
+              <textarea matInput formControlName="contenuto" name="contenuto"
+                placeholder="inserisci il contenuto dell'elemento"></textarea>
+            </mat-form-field>
+
+      </div>
+
+
+
+
+
+    </div>
+  </div>
+</form>

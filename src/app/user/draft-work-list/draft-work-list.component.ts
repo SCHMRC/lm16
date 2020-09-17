@@ -53,6 +53,7 @@ export class DraftWorkListComponent implements OnInit {
     }else {
       this.userID.subscribe((user) => {
         (user)? this.show = true : this.show = false
+        this.orders = [];
         this.orderService.getAllOrder(user).then((snapshot) => {
           Object.entries(snapshot.val()).forEach(([key, value]) => {
             if ((!value['completed'] && !value['draftAccepted']) && (value['draft'][0] !== 'vuoto')) {
@@ -226,6 +227,10 @@ export class DraftWorkListComponent implements OnInit {
    /* Object.entries(this.task.subtasks).forEach(([key, value]) => {
       this.orderService.removeSingleDraft(rappId, this.orderID, value['idproject']).then(()=>{console.log('ok')})
     })*/
+  }
+
+  ngOnDestroy(): void {
+    this.orders = []
   }
 
 

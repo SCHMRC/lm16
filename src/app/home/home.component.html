@@ -1,13 +1,24 @@
 <div class="container" *ngIf="show">
-  <div class="jumbotron jumbotron-fluid">
+  <div class="row jumbotron jumbotron-fluid">
     <div class="container">
       <h1 class="display-4">Ci sono modifiche da apportare nei seguenti ordini</h1>
-      <p class="lead"*ngFor="let element of order">{{element['nome']}}</p>
+      <p class="lead"*ngFor="let element of listModifiche">{{element['nome']}}</p>
       controlla nella sezione visualizza bozze
     </div>
   </div>
-
-
-
+  <div class="row jumbotron jumbotron-fluid bg-success text-white">
+    <div class="container">
+      <h1 class="display-4">Ci sono nuove bozze accettate in data odierna {{date | date: 'dd/MM/yy'}}</h1>
+      <p class="lead" *ngFor="let element of draftAccepted">{{element['nome']}}</p>
+      controlla nella sezione ordini confermati
+    </div>
+  </div>
+  <div class="row jumbotron jumbotron-fluid bg-dark text-white">
+    <div class="container">
+      <h1 class="display-4">Ordini Inviati</h1>
+      <p class="lead" *ngFor="let element of ordineInviato">{{element['nome']}}: inviato il {{element['dataInvio']}}</p>
+    </div>
+  </div>
 </div>
-<p>home works!</p>
+
+
