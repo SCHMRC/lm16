@@ -96,6 +96,7 @@ export class InsertWorkComponent implements OnInit {
 
 
   onSubmit() {
+    this.reset = false;
     this.project = [];
     let descrizioneVeicolo: Part[] = [];
     let count = 0;
@@ -242,6 +243,9 @@ export class InsertWorkComponent implements OnInit {
   }
 
   resetValue(){
+    this.orderService.setReset$(true)
+    this.reset = true;
+    this.imageUrl = [];
     this.formGroup = this.setOrder();
     this.project = [];
     this.order = null;

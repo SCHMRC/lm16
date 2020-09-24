@@ -42,6 +42,8 @@
 
 <!---->
 
+
+
 <div *ngIf="show" class="jumbotron jumbotron-fluid">
   <div class="container">
     <h1 class="display-4">Elenco Vuoto</h1>
@@ -57,26 +59,27 @@
 </div>
 
 <!---->
-<div *ngIf="elementdata">
-  <div class="container" *ngFor="let element of elementdata | keyvalue ;index as i">
+
+<div *ngIf="obs">
+  <div class="container" *ngFor="let element of obs | async ;index as i">
+
     <mat-accordion>
 
       <mat-expansion-panel class="mb-1" (opened)="panelOpenState[i] = true" (closed)="panelOpenState[i] = false">
         <mat-expansion-panel-header
-          [ngClass]="{'bg-success': element.value.completed ||  element.value.external , 'bg-warning': element.value.draft[0] !== 'vuoto', 'bg-info': element.value.draftAccepted && !element.value.external && !element.value.completed}">
-          <mat-panel-title style="width: 312px;" [ngClass]="{'text-white': element.value.completed}">
-            <span><b>{{element.value.nome}}</b></span>
-            <p *ngIf="element.value.externalWork !== 'interno' && !element.value.external"> - da inviare a:
-              {{element.value.externalWork}}</p>
-            <p *ngIf="element.value.external"> - Inviato a: {{element.value.externalWork}}</p>
-            <p *ngIf="element.value.completed"> - Ordine Completo</p>
-            <p *ngIf="!element.value.external && element.value.draft[0] !== 'vuoto' && !element.value.completed && !element.value.draftAccepted"
+          [ngClass]="{'bg-success': element.order.completed ||  element.order.external , 'bg-warning': element.order.draft[0] !== 'vuoto', 'bg-info': element.order.draftAccepted && !element.order.external && !element.order.completed}">
+          <mat-panel-title style="width: 312px;" [ngClass]="{'text-white': element.order.completed}">
+            <span><b>{{element.order.nome}}</b></span>
+            <p *ngIf="element.order.externalWork !== 'interno' && !element.order.external"> - da inviare a:
+              {{element.order.externalWork}}</p>
+            <p *ngIf="element.order.external"> - Inviato a: {{element.order.externalWork}}</p>
+            <p *ngIf="element.order.completed"> - Ordine Completo</p>
+            <p *ngIf="!element.order.external && element.order.draft[0] !== 'vuoto' && !element.order.completed && !element.order.draftAccepted"
               class="text-primary ml-3 ">{{text['presente']}}</p>
-            <p *ngIf="element.value.draftAccepted && !element.value.external && !element.value.completed"
+            <p *ngIf="element.order.draftAccepted && !element.order.external && !element.order.completed"
               class="text-primary ml-3">{{text['accettata']}}</p>
           </mat-panel-title>
           <mat-panel-description>
-            {{element.value.data}}
 
 
           </mat-panel-description>
@@ -84,11 +87,11 @@
 
 
 
-        <div class="m-3 p-3 mat-elevation-z8" *ngFor="let progetto of element.value.progetto | keyvalue;index as k">
-          <div *ngIf="progetto;else eliminato">
+        <div class="m-3 p-3 mat-elevation-z8" *ngFor="let progetto of element.order.progetto | keyvalue;index as k">
+        <div *ngIf="progetto;else eliminato">
             <h1>Elemento numero <span class="badge badge-secondary">{{k+1}}</span>
-              <span [hidden]="element.value.progetto.length == 1" class="float-right">
-                <button (click)="removeItem(element.value.oid,progetto.value.projectNumber)" type="button"
+              <span [hidden]="element.order.progetto.length == 1" class="float-right">
+                <button (click)="removeItem(element.order.oid,progetto.value.order.projectNumber)" type="button"
                   matTooltip="Rimuovi Elemento" mat-mini-fab color="warn"
                   aria-label="Example icon button with a filter list icon">
                   <mat-icon>clear</mat-icon>
@@ -96,10 +99,9 @@
             <div class="jumbotron blue-grey lighten-5">
               <div class="container">
 
-
-                <h1 class="display-4">Cliente: {{element.value.nome}}</h1>
-                <h2 class="display-5">id :{{element.value.oid}}</h2>
-                <div *ngIf="user.utente == 'grafico'"><b>Nome File:</b> {{element.value.nome}} - copie
+                <h1 class="display-4">Cliente: {{element.order.nome}}</h1>
+                <h2 class="display-5">id :{{element.order.oid}}</h2>
+                <div *ngIf="user.utente == 'grafico'"><b>Nome File:</b> {{element.order.nome}} - copie
                   {{progetto.value.copie}} - {{progetto.value.materiale}}
                   <span *ngIf="progetto.value.calpestabile">Calpestabile</span>
                   <span *ngIf="progetto.value.luminosa">{{progetto.value.luminosa}}</span>
@@ -126,18 +128,57 @@
                     <div id="circle" [ngStyle]="{'background': progetto.value.colore}"></div>
                   </div>
                 </div>
-                <div class="container" *ngIf="progetto.value.materiale == 'Veicolo'">
-                  <div class="row" id="container">
-                    <div *ngFor="let element of numeroListaId; index as k" id="id-{{element}}" class="red-test"
-                      [ngClass]="{'bg-danger': parts[element]}">
-                      <b>{{element}}</b>
+
+
+
+                <div class="container" *ngIf="element.order.veicolo">
+                  <div [ngSwitch]="element.order.veicolo.tipo">
+                    <div *ngSwitchCase="'Furgone Maxi'" class="row" id="container">
+                      <div *ngFor="let element1 of element.order.veicolo.numeroLista; index as k" id="Mid-{{element1}}" class="red-test"
+                        [ngClass]="{'bg-danger': element.order.veicolo.parts[element1]}">
+                        <b>{{k+1}}</b>
+                      </div>
+                    </div>
+
+                    <div  *ngSwitchCase="'Fiorino'" class="row" id="container2">
+
+                      <div>
+                        <svg viewBox="0 0 300 33.14" id="Fid-1">
+                          <path class="red-fade" id="Fid-1" d="M43.11,2.09l-29.85.19s-8.8.77-9.75,4S1.43,25.39,1.43,25.39a9.82,9.82,0,0,0,4.75,6.55c4.21,2.49,7.37,2.55,13.54,3.19s76.82-1.87,
+                                76.82-1.87a10.84,10.84,0,0,0,.61-5.41c-.31-3.64-.24-14.87-8.89-20S58,2.28,43.11,2.09Z"
+                            transform="translate(-1.43 -2.09)"  [ngClass]="{'fill-danger': element.order.veicolo.parts[1]}" />
+                          <text style="font-size:15px;" transform="matrix(1 0 0 1 7.0807 14.0462)">1</text>
+                        </svg>
+                      </div>
+
+                      <div>
+                        <svg id="Fid-2" viewBox="0 0 400 36.13">
+                          <path class="red-fade" id="Fid-2"
+                            d="M2.3,2.65,1.48,33.33s30.47,1.43,36.2,1,13.08-3.27,13.29-11a97.22,97.22,0,0,0-.82-14.73S48.72,2,40.74,1.43,2.3,1,2.3,1Z"
+                             [ngClass]="{'fill-danger': element.order.veicolo.parts[2]}" />
+                          <text style="font-size:15px;" transform="matrix(1 0 0 1 7.0807 14.0462)">2</text>
+                        </svg>
+                      </div>
+
+                      <div>
+                        <svg id="Fid-3" viewBox="0 0 420 74.4">
+                          <path class="red-fade" id="Fid-3" d="M48.9,23c0,0-8.6-0.2-13.7,0s-14.7,1.8-19.6,3.9s-7.8,
+                              4.7-9.6,9S2.9,48.6,2.9,48.6L47.5,50L48.9,23z" [ngClass]="{'fill-danger': element.order.veicolo.parts[3]}" />
+                          <text style="font-size:15px;" transform="matrix(1 0 0 1 7.0807 36.0462)">3</text>
+                        </svg>
+                      </div>
+                      <div *ngFor="let element1 of element.order.veicolo.numeroLista; index as k" id="Fid-{{element1}}" class="red-test"
+                        [ngClass]="{'bg-danger': element.order.veicolo.parts[element1]}">
+                        <b>{{k+4}}</b>
+                      </div>
                     </div>
                   </div>
 
-                  <div class="container">
-                    <span *ngFor="let elementi of elementiveicolo | keyvalue">
-                      <span *ngIf="elementi.value.ido == element.value.oid">
-                        <span class="float-left" *ngFor="let descrizione of elementi.value.descrizioniParti | keyvalue">
+
+
+
+
+                        <span class="float-left" *ngFor="let descrizione of element.order.veicolo.descrizioniParti | keyvalue">
                           <div class="card bg-light-gray mr-3 p-2 mt-2" style="max-width: 22rem;">
                             <p class="card-header"><b>{{descrizione.value.id}}</b></p>
                             <p class="card-text">base: {{descrizione.value.base}}</p>
@@ -146,9 +187,9 @@
                             <p class="card-text">materiale: {{descrizione.value.materiale}}</p>
                           </div>
                         </span>
-                      </span>
-                    </span>
-                  </div>
+
+
+
 
 
                 </div>
@@ -181,11 +222,11 @@
                   </mat-card-content>
                   <mat-card-actions>
                     <button mat-button
-                      (click)="removeImg(element.value.oid,progetto.value.projectNumber,image.value, image.key)">RIMUOVI</button>
+                      (click)="removeImg(element.order.oid,progetto.value.projectNumber,image.value, image.key)">RIMUOVI</button>
                     <button mat-button (click)="fileInput.click()">
                       <span>MODIFICA</span>
                       <input #fileInput type="file"
-                        (change)="onFileInput($event,element.value.oid,progetto.value.projectNumber,image.value,image.key)"
+                        (change)="onFileInput($event,element.order.oid,progetto.value.projectNumber,image.value,image.key)"
                         style="display:none;" />
                     </button>
                   </mat-card-actions>
@@ -200,7 +241,7 @@
           </div>
 
         </div>
-        <button (click)="removeOrder(element.value.oid)" class="float-right" mat-raised-button color="warn">Elimina
+        <button (click)="removeOrder(element.order.oid)" class="float-right" mat-raised-button color="warn">Elimina
           Ordine</button>
 
 
@@ -215,3 +256,6 @@
 
   </div>
 </div>
+
+<mat-paginator [length]="100" [pageSize]="10" [pageSizeOptions]="[5, 10, 25, 100]">
+</mat-paginator>

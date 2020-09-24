@@ -1,1 +1,79 @@
-<p>fiorino works!</p>
+<div id="container">
+
+<div>
+    <svg viewBox="0 0 300 33.14" id="id-1">
+      <path class="red-fade" id="id-1" d="M43.11,2.09l-29.85.19s-8.8.77-9.75,4S1.43,25.39,1.43,25.39a9.82,9.82,0,0,0,4.75,6.55c4.21,2.49,7.37,2.55,13.54,3.19s76.82-1.87,
+          76.82-1.87a10.84,10.84,0,0,0,.61-5.41c-.31-3.64-.24-14.87-8.89-20S58,2.28,43.11,2.09Z"
+        transform="translate(-1.43 -2.09)" (click)="test($event)" [ngClass]="{'fill-danger': parti[1]}" />
+  <text style="font-size:15px;" transform="matrix(1 0 0 1 7.0807 14.0462)">1</text>
+      </svg>
+</div>
+
+<div>
+    <svg id="id-2" viewBox="0 0 400 36.13">
+      <path class="red-fade" id="id-2"
+        d="M2.3,2.65,1.48,33.33s30.47,1.43,36.2,1,13.08-3.27,13.29-11a97.22,97.22,0,0,0-.82-14.73S48.72,2,40.74,1.43,2.3,1,2.3,1Z"
+        (click)="test($event)" [ngClass]="{'fill-danger': parti[2]}" />
+        <text style="font-size:15px;" transform="matrix(1 0 0 1 7.0807 14.0462)">2</text>
+    </svg>
+</div>
+
+<div>
+    <svg id="id-3" viewBox="0 0 420 74.4">
+      <path class="red-fade" id="id-3" d="M48.9,23c0,0-8.6-0.2-13.7,0s-14.7,1.8-19.6,3.9s-7.8,
+        4.7-9.6,9S2.9,48.6,2.9,48.6L47.5,50L48.9,23z" (click)="test($event)" [ngClass]="{'fill-danger': parti[3]}" />
+      <text style="font-size:15px;" transform="matrix(1 0 0 1 7.0807 36.0462)">3</text>
+    </svg>
+</div>
+
+
+
+
+
+<div *ngFor="let element of elements; index as i"
+class="red-fade" id="id-{{i+4}}"
+(click)="test($event)"
+[ngClass]="{'fill-danger': parti[i+4]}">{{i+4}}</div>
+
+
+
+</div>
+
+ <form [formGroup]="formParent">
+
+
+  <div formArrayName="child">
+    <div *ngFor="let child of formParent['controls'].child['controls'];index as i">
+
+      <div *ngIf="i>0" formGroupName="{{i}}">
+        {{idElements[i-1]}}
+        <mat-form-field appearance="legacy" class="numero pl-2">
+          <mat-label>Base</mat-label>
+          <input matInput formControlName="base" name="base" placeholder="espresso in cm" type="number">
+        </mat-form-field>
+        <mat-form-field appearance="legacy" class="numero pl-2">
+          <mat-label>Altezza</mat-label>
+          <input matInput formControlName="altezza" name="altezza" placeholder="espresso in cm" type="number">
+        </mat-form-field>
+        <mat-radio-group class="ml-3" formControlName="materiale" name="materiale{{i}}">
+          <mat-radio-button class="ml-3" value="digitale">Digitale</mat-radio-button>
+          <mat-radio-button class="ml-3" value="prespaziato">Prespaziato</mat-radio-button>
+        </mat-radio-group>
+
+        <p>
+          <mat-form-field appearance="legacy" class="pl-2" id="textarea">
+            <mat-label>Contenuto</mat-label>
+            <textarea matInput formControlName="contenuto" name="contenuto"
+              placeholder="inserisci il contenuto dell'elemento"></textarea>
+          </mat-form-field>
+
+      </div>
+
+
+
+
+
+    </div>
+  </div>
+</form>
+

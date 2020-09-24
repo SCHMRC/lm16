@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { OrderService } from 'src/app/services/order.service';
 import { UserService } from 'src/app/services/user.service';
 import { Order } from 'src/app/services/order';
@@ -9,6 +9,8 @@ import { Observable } from 'rxjs';
 import { Part } from 'src/app/services/part';
 import { Parts } from 'src/app/services/parts';
 import { Project } from 'src/app/services/project';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatTableDataSource } from '@angular/material/table';
 
 
 
@@ -24,8 +26,24 @@ interface Finder {
 interface Elementiveicolo {
   ido: string;
   idp: any;
+  numeroLista: number[];
   parti: Parts;
   descrizioniParti: Part[];
+}
+
+interface Veicolo {
+  ido: string;
+  idp: any;
+  tipo: string,
+  parts: Parts,
+  numeroLista: number[];
+  parti: string[];
+  descrizioniParti: Part[];
+}
+
+interface Ordine{
+  order: Order,
+  veicolo?: Veicolo
 }
 
 
@@ -35,17 +53,25 @@ interface Elementiveicolo {
   styleUrls: ['./work-list.component.scss']
 })
 export class WorkListComponent implements OnInit {
-  numeroListaId: number[] = [];
+  ordine: Ordine[] = [];
+
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+
+  /**/
+  numeroListaId: number[][] = [];
   elementiveicolo: Elementiveicolo[] = []
   part: Part[] = [];
   parts: Parts;
+/**/
   displayedColumns: string[] = ['nome'];
   idRappresentante: string;
-  elementdata: any[] = []
+  elementdata: any[] = [];
+  dataSource: MatTableDataSource<Ordine>;
   cols: string[];
   input: string;
   panelOpenState: boolean[] = [false];
   order: Order[] = []
+  project: Project[] = [];
   user: User;
   users: User[] = [];
   selectedIDR: string;
@@ -78,6 +104,8 @@ export class WorkListComponent implements OnInit {
     private graphicService: GraphicService,
     private storageService: StorageService) {
 
+
+
   }
 
   ngOnInit(): void {
@@ -94,6 +122,7 @@ export class WorkListComponent implements OnInit {
         }
       })
     });
+
 
 
 
@@ -136,20 +165,40 @@ export class WorkListComponent implements OnInit {
 
     let user: string;
     (this.user.utente !== 'grafico') ? user = this.user.uId : user = this.idRappresentante
-
     this.orderService.getAllOrder$(user).subscribe(
           (data) => {
-            Object.entries(data).forEach(([key, value]) => {
-              this.order.push(new Order(value['data'], value['oid'], value['nome'], value['pezzi'], value['progetto'],
-                value['externalWork'], value['external'], value['completed'], value['draft'], value['draftAccepted'], value['modifiche'], value['datadraftAccepted'], value['dataInvio']))
-            }
-            )
             switch(param){
-              case 'presente': { this.elementdata = this.order.filter(res => { return res.draft[0] !== 'vuoto' && !res.external && !res.completed && !res.draftAccepted }); break }
-              case 'accettata': { this.elementdata = this.order.filter(res => { return res.draftAccepted && !res.external && !res.completed}); break}
-              case 'completa': { this.elementdata = this.order.filter(res => { return res.completed }); break}
-              case 'esterna': { this.elementdata = this.order.filter(res => { return res.external }); break}
-              case 'nuovi': { this.elementdata = this.order.filter(res => { return res.draft[0] == 'vuoto' && !res.draftAccepted && !res.external && !res.completed }); break }
+              case 'presente': {
+                this.elementdata = this.getOrder(data).filter(res => { return res.order.draft[0] !== 'vuoto' && !res.order.external && !res.order.completed && !res.order.draftAccepted })
+                this.dataSource = new MatTableDataSource<Ordine>(this.elementdata);
+                this.dataSource.paginator = this.paginator;
+                this.obs = this.dataSource.connect();
+                break
+              }
+              case 'accettata': {
+                this.elementdata = this.getOrder(data).filter(res => { return res.order.draftAccepted && !res.order.external && !res.order.completed });
+                this.dataSource = new MatTableDataSource<Ordine>(this.elementdata);
+                this.dataSource.paginator = this.paginator;
+                this.obs = this.dataSource.connect();
+                break}
+              case 'completa': {
+                this.elementdata = this.getOrder(data).filter(res => { return res.order.completed });
+                this.dataSource = new MatTableDataSource<Ordine>(this.elementdata);
+                this.dataSource.paginator = this.paginator;
+                this.obs = this.dataSource.connect();
+                break}
+              case 'esterna': {
+                this.elementdata = this.getOrder(data).filter(res => { return res.order.external });
+                this.dataSource = new MatTableDataSource<Ordine>(this.elementdata);
+                this.dataSource.paginator = this.paginator;
+                this.obs = this.dataSource.connect();
+                break}
+              case 'nuovi': {
+                this.elementdata = this.getOrder(data).filter(res => { return res.order.draft[0] == 'vuoto' && !res.order.draftAccepted && !res.order.external && !res.order.completed });
+                this.dataSource = new MatTableDataSource<Ordine>(this.elementdata);
+                this.dataSource.paginator = this.paginator;
+                this.obs = this.dataSource.connect();
+                break }
             }
           })
   }
@@ -160,12 +209,10 @@ export class WorkListComponent implements OnInit {
       if (this.input != "") {
         this.orderService.getAllOrder$(this.idRappresentante).subscribe(
           (data) => {
-            Object.entries(data).forEach(([key, value]) => {
-              this.order.push(new Order(value['data'], value['oid'], value['nome'], value['pezzi'], value['progetto'],
-                value['externalWork'], value['external'], value['completed'], value['draft'], value['draftAccepted'], value['modifiche'], value['datadraftAccepted'], value['dataInvio']))
-            }
-            )
-            this.elementdata = this.order.filter(res => { return res.nome.match(this.input) })
+            this.elementdata = this.getOrder(data).filter(res => { return res.order.nome.match(this.input) })
+            this.dataSource = new MatTableDataSource<Ordine>(this.elementdata);
+            this.dataSource.paginator = this.paginator;
+            this.obs = this.dataSource.connect();
           })
       }
       else if (this.input == "") { this.init$() }
@@ -174,12 +221,11 @@ export class WorkListComponent implements OnInit {
       if (this.input != "") {
         this.orderService.getAllOrder$(this.user.uId).subscribe(
           (data) => {
-            Object.entries(data).forEach(([key, value]) => {
-              this.order.push(new Order(value['data'], value['oid'], value['nome'], value['pezzi'], value['progetto'],
-                value['externalWork'], value['external'], value['completed'], value['draft'], value['draftAccepted'], value['modifiche'], value['datadraftAccepted'], value['dataInvio']))
-            }
-            )
-            this.elementdata = this.order.filter(res => { return res.nome.match(this.input) })
+            this.elementdata = this.getOrder(data).filter(res => { return res.order.nome.match(this.input) })
+            this.dataSource = new MatTableDataSource<Ordine>(this.elementdata);
+            this.dataSource.paginator = this.paginator;
+            this.obs = this.dataSource.connect();
+
           })
       }
       else if (this.input == "") { this.init$() }
@@ -196,39 +242,8 @@ export class WorkListComponent implements OnInit {
             this.show = true
           }
           else {
-            Object.entries(data).forEach(([key, value]) => {
-              this.order.push(new Order(value['data'], value['oid'], value['nome'], value['pezzi'],
-                value['progetto'], value['externalWork'], value['external'], value['completed'], value['draft'], value['draftAccepted'], value['modifiche'], value['datadraftAccepted'], value['dataInvio']))
-              Object.entries(value['progetto']).forEach((key, valueP) => {
-                let k = key[0]
-                let element = key[1];
-                if (element['materiale'] == 'Veicolo') {
-                  for (let k = 1; k <= 16; k++) {
-                    this.numeroListaId.push(k);
-                  }
-                  this.parts = new Parts();
-                  this.part = element['descrizioneVeicolo']
-                  let numero: string[] = [];
-                  this.part.forEach(element => {
-                    numero.push(element.id.split('-')[1])
-                  })
-                  numero.forEach(i => {
-                    this.parts[i] = true
-                  });
-                  this.elementiveicolo.push({
-                    ido: value['oid'],
-                    idp: k,
-                    parti: this.parts,
-                    descrizioniParti: this.part,
-                  })
-                }
-              });
-            })
-            this.elementdata = this.order
-
+            this.elementdata = this.getOrder(data)
           }
-
-
         }
       )
     }
@@ -239,49 +254,15 @@ export class WorkListComponent implements OnInit {
           if (data === undefined || data == null) {
             this.show = true
           } else {
-            this.show = false;
-            Object.entries(data).forEach(([key, value]) => {
-              this.order.push(new Order(value['data'], value['oid'], value['nome'], value['pezzi'], value['progetto'], value['externalWork'],
-              value['external'], value['completed'], value['draft'], value['draftAccepted'], value['modifiche'], value['datadraftAccepted'], value['dataInvio']))
-              Object.entries(value['progetto']).forEach((key,valueP) => {
-                let k = key[0]
-                let element = key[1];
-                if (element['materiale'] == 'Veicolo') {
-                  for (let k = 1; k <= 16; k++) {
-                    this.numeroListaId.push(k);
-                  }
-                  this.parts = new Parts();
-                  this.part = element['descrizioneVeicolo']
-                  let numero: string[] = [];
-                  this.part.forEach(element => {
-                    numero.push(element.id.split('-')[1])
-                  })
-                  numero.forEach(i => {
-                    this.parts[i] = true
-                  });
-                  this.elementiveicolo.push({
-                    ido: value['oid'],
-                    idp: k,
-                    parti: this.parts,
-                    descrizioniParti: this.part,
-                  })
-                }
-              });
+            this.elementdata = this.getOrder(data)
+            this.dataSource = new MatTableDataSource<Ordine>(this.elementdata);
+            this.dataSource.paginator = this.paginator;
+            this.obs = this.dataSource.connect();
 
-
-            })
-
-            this.elementdata = this.order
           }
-
-
-
-
         }
       )
-
     }
-
   }
 
 
@@ -368,6 +349,7 @@ export class WorkListComponent implements OnInit {
     this.elementiveicolo = []
     this.elementdata = []
     this.order = []
+    this.ordine = []
   }
 
   /*chiamata importante perchè mi chiude il subscribe con this.rappresentanteID
@@ -383,13 +365,97 @@ export class WorkListComponent implements OnInit {
     let dataSearch = `${("0" + (this.date.getMonth() + 1)).slice(-2)}/${("0" + this.date.getDate()).slice(-2)}/${this.date.getFullYear()}`;
     this.orderService.getAllOrder$(user).subscribe(
       (data) => {
-        Object.entries(data).forEach(([key, value]) => {
-          this.order.push(new Order(value['data'], value['oid'], value['nome'], value['pezzi'], value['progetto'],
-            value['externalWork'], value['external'], value['completed'], value['draft'], value['draftAccepted'], value['modifiche'], value['datadraftAccepted'], value['dataInvio']))
-        }
-        )
-        this.elementdata = this.order.filter(res => { return res.data == dataSearch})
+        this.elementdata = this.getOrder(data).filter(res => { return res.order.data == dataSearch });
+        this.dataSource = new MatTableDataSource<Ordine>(this.elementdata);
+        this.dataSource.paginator = this.paginator;
+        this.obs = this.dataSource.connect();
       })
+
+  }
+
+  getOrder(data: any[]): Ordine[]{
+    this.show = false;
+    let veicolo: Veicolo;
+    Object.entries(data).forEach(([key, value]) => {
+      let order: Order = new Order(value['data'], value['oid'], value['nome'], value['pezzi'], value['progetto'], value['externalWork'],
+        value['external'], value['completed'], value['draft'], value['draftAccepted'], value['modifiche'], value['datadraftAccepted'], value['dataInvio'])
+
+
+      Object.entries(value['progetto']).forEach((key, valueP) => {
+        let k = key[0]
+        let element = key[1];
+        let idString: string[] = [];
+
+
+        if (element['materiale'] == 'Veicolo') {
+          element['descrizioneVeicolo'].forEach(element => {
+            idString.push(element['id'])
+          })
+          veicolo = this.setVeicolo(element['tipoVeicolo'], element['descrizioneVeicolo'], value['oid'], k, idString)
+        }
+      })
+
+      if (veicolo !== undefined && veicolo.ido == order.oid) {
+        let obj: Ordine;
+        obj = {
+          order: order,
+          veicolo: veicolo,
+        }
+        this.ordine.push(obj)
+      } else {
+        this.ordine.push({
+          order: order,
+        })
+
+      }
+    })
+
+    return this.ordine;
+
+  }
+
+  setVeicolo(tipoVeicolo: string, descrizioneVeicolo: Part[], ordineId: string,idProgetto: string ,idString: string[]): Veicolo {
+    let parts: Parts = new Parts();
+    let veicolo: Veicolo;
+    let numeroListaId: number[] = [];
+    let lista: any[] = [];
+    switch (tipoVeicolo) {
+      case 'Fiorino':
+        numeroListaId = [];
+        for (let i = 4; i <= 13; i++) {
+          numeroListaId.push(i)
+        }
+        lista = []
+        idString.forEach(element => {
+          lista = element.split('-')
+          parts[lista[1]] = true;
+        })
+
+        break;
+      case 'Furgone Maxi': {
+        numeroListaId = [];
+        for (let i = 1; i <= 16; i++) {
+          numeroListaId.push(i)
+        }
+        let lista = []
+        idString.forEach(element => {
+          lista = element.split('-')
+          parts[lista[1]] = true;
+        })
+        break;
+      }
+    }
+    veicolo = {
+      ido: ordineId,
+      idp: idProgetto,
+      parti: idString,
+      parts: parts,
+      tipo: tipoVeicolo,
+      numeroLista: numeroListaId,
+      descrizioniParti: descrizioneVeicolo ,
+    }
+
+    return veicolo
 
   }
 

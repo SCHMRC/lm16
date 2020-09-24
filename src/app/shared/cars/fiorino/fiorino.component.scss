@@ -1,0 +1,151 @@
+#container{
+  position: relative;
+  background-image: url('./../../../../assets/furgone_002.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+   width: 600px; height: 400px;
+}
+
+#id-1{
+  position: absolute;
+  margin-top: 220px;
+  margin-left: 225px;
+}
+
+#id-2{
+  z-index: 1;
+  position: absolute;
+  margin-top: 55px;
+  margin-left: 100px;
+}
+
+#id-3{
+  position: absolute;
+  margin-top: 25px;
+  margin-left: 37px;
+}
+
+
+#id-4{
+    z-index: 1;
+  position: absolute;
+  width: 70px;
+  height: 20px;;
+  margin-top: 105px;
+  margin-left: 100px;
+}
+
+#id-5{
+  position: absolute;
+  width: 55px;
+  height: 20px;;
+  margin-top: 105px;
+  margin-left: 40px;
+}
+
+#id-6{
+  position: absolute;
+  width: 55px;
+  height: 20px;;
+  margin-top: 105px;
+  margin-left: 195px;
+}
+
+#id-7{
+  position: absolute;
+  width: 55px;
+  height: 15px;;
+  margin-top: 96px;
+  margin-left: 460px;
+}
+
+#id-8{
+  position: absolute;
+  width: 50px;
+  height: 60px;;
+  margin-top: 220px;
+  margin-left: 435px;
+}
+
+#id-9{
+  position: absolute;
+  width: 50px;
+  height: 60px;;
+  margin-top: 220px;
+  margin-left: 490px;
+}
+#id-10{
+    position: absolute;
+  width: 70px;
+  height: 20px;;
+  margin-top: 275px;
+  margin-left: 130px;
+}
+
+#id-11{
+    position: absolute;
+  width: 120px;
+  height: 20px;;
+  margin-top: 275px;
+  margin-left: 230px;
+}
+
+#id-12{
+    position: absolute;
+  width: 50px;
+  height: 20px;;
+  margin-top: 290px;
+  margin-left: 490px;
+}
+
+#id-13{
+    position: absolute;
+  width: 50px;
+  height: 20px;;
+  margin-top: 290px;
+  margin-left: 435px;
+}
+[class^="red-"] {
+  border-radius: 5px;
+  position: absolute;
+  z-index: 1;
+  fill: lightgrey;
+  background: lightgrey;
+}
+
+.red-fade {
+  transition-duration: 0.3s;
+}
+.red-fade:hover, .red-fade:focus, .red-fade:active {
+  fill: white;
+  background-color: white;
+  color: white
+}
+
+.fill-danger {
+  fill: red;
+  background-color: red;
+}
+
+.colonna {
+  display: flex;
+  flex-direction: column;
+  margin: 15px 0;
+}
+
+#param {
+  border: solid lightgrey 1px;
+  border-radius: 20px;
+  padding: 5px;
+  width: 600px !important;
+}
+
+#textarea{
+  width: 380px !important;
+}
+
+.numero{
+  width: 80px !important;
+
+}
+

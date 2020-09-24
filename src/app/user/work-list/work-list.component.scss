@@ -39,15 +39,23 @@ table {
    width: 600px; height: 400px;
 }
 
+#container2{
+  position: relative !important;
+  background-image: url('./../../../assets/furgone_002.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+   width: 600px; height: 400px;
+}
 
-#id-1 {
+
+#Mid-1 {
   left: 55px !important;
   top: 55px !important;
   width: 85px;
   height: 30px;
 }
 
-#id-2 {
+#Mid-2 {
   left: 141px !important;
   top: 55px !important;
   width: 85px;
@@ -55,112 +63,214 @@ table {
 }
 
 
-#id-3 {
+#Mid-3 {
   left: 55px !important;
   top: 98px !important;
   width: 82px;
   height: 8.123px;
 }
 
-#id-4 {
+#Mid-4 {
   left: 145px !important;
   top: 98px !important;
   width: 70px;
   height: 8.123px;
 }
 
-#id-5 {
+#Mid-5 {
   left: 145px;
   top: 118px;
   width: 80px;
   height: 12px;
 }
 
-#id-6 {
+#Mid-6 {
   left: 250px;
   top: 100px;
   width: 40px;
   height: 16px;
 }
 
-#id-7 {
+#Mid-7 {
   left: 442px;
   top: 97px;
   width: 50px;
   height: 16px;
 }
 
-#id-8 {
+#Mid-8 {
   left: 417px;
   top: 240px;
   width: 47px;
   height: 40px;
 }
 
-#id-9 {
+#Mid-9 {
   left: 467px;
   top: 240px;
   width: 47px;
   height: 40px;
 }
 
-#id-16 {
-  left: 467px;
-  top: 300px;
-  width: 47px;
-  height: 20px;
-}
-#id-10 {
+
+#Mid-10 {
   left: 248px;
   top: 240px;
   width: 90px;
   height: 40px;
 }
-#id-11 {
+#Mid-11 {
   left: 160px !important;
   top: 240px !important;
   width: 85px !important;
   height: 40px !important;
 }
 
-#id-12 {
+#Mid-12 {
   left: 248px;
   top: 285px;
   width: 90px;
   height: 12px;
 }
-#id-13 {
+#Mid-13 {
   left: 160px;
   top: 285px;
   width: 85px;
   height: 12px;
 }
-#id-14 {
+#Mid-14 {
   left: 160px;
   top: 305px;
   width: 85px;
   height: 12px;
 }
 
-#id-15 {
+#Mid-15 {
   left: 100px;
   top: 290px;
   width: 40px;
   height: 16px;
 }
 
-#id-16 {
+#Mid-16 {
   left: 467px;
   top: 300px;
   width: 47px;
   height: 20px;
 }
 
+#Fid-1{
+  position: absolute;
+  margin-top: 220px;
+  margin-left: 225px;
+}
+
+#Fid-2{
+  z-index: 1;
+  position: absolute;
+  margin-top: 55px;
+  margin-left: 100px;
+}
+
+#Fid-3{
+  position: absolute;
+  margin-top: 25px;
+  margin-left: 37px;
+}
+
+
+#Fid-4{
+    z-index: 1;
+  position: absolute;
+  width: 70px;
+  height: 20px;;
+  margin-top: 105px;
+  margin-left: 100px;
+}
+
+#Fid-5{
+  position: absolute;
+  width: 55px;
+  height: 20px;;
+  margin-top: 105px;
+  margin-left: 40px;
+}
+
+#Fid-6{
+  position: absolute;
+  width: 55px;
+  height: 20px;;
+  margin-top: 105px;
+  margin-left: 195px;
+}
+
+#Fid-7{
+  position: absolute;
+  width: 55px;
+  height: 15px;;
+  margin-top: 96px;
+  margin-left: 460px;
+}
+
+#Fid-8{
+  position: absolute;
+  width: 50px;
+  height: 60px;;
+  margin-top: 220px;
+  margin-left: 435px;
+}
+
+#Fid-9{
+  position: absolute;
+  width: 50px;
+  height: 60px;;
+  margin-top: 220px;
+  margin-left: 490px;
+}
+#Fid-10{
+    position: absolute;
+  width: 70px;
+  height: 20px;;
+  margin-top: 275px;
+  margin-left: 130px;
+}
+
+#Fid-11{
+    position: absolute;
+  width: 120px;
+  height: 20px;;
+  margin-top: 275px;
+  margin-left: 230px;
+}
+
+#Fid-12{
+    position: absolute;
+  width: 50px;
+  height: 20px;;
+  margin-top: 290px;
+  margin-left: 490px;
+}
+
+#Fid-13{
+    position: absolute;
+  width: 50px;
+  height: 20px;;
+  margin-top: 290px;
+  margin-left: 435px;
+}
+
+
 [class^="red-"] {
   border-radius: 5px !important;
   position: absolute !important;
   z-index: 1 !important;
+  fill: white;
   background: lightgrey;
+}
+
+.fill-danger {
+  fill: red;
+  background-color: red;
 }
 
 
